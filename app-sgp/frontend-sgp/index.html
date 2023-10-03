@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Produtos</title>
+    <link rel="stylesheet" href="./style.css">
+    <script crossorigin src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+</body>
+<script type="text/babel">
+
+    class ProdutoPageComponent extends React.Component {
+
+        constructor() {
+            super();
+            this.state = {
+                produtos: [],
+                novoProduto: {
+                    nome: '',
+                    descr: '',
+                    qtd: '',
+                    preco: '',
+                },
+                produtoEmEdicao: null,
+                showNotification: false,
+                notificationMessage: '',
+            };
+        }
+
+        componentDidMount() {
+            this.fetchProdutos();
+        }
+
+        async fetchProdutos() {
+            try {
+                const response = await fetch('http://localhost:8080/v1/produtos');
+                if (response.ok) {
+                    const data = await response.json();
+                    this.setState({ produtos: data });
+                } else {
+                    console.error('Erro ao buscar os produtos.');
+                }
+            } catch (error) {
+                console.error('Erro ao buscar os produtos:', error);
+            }
+        }
+
+        showNotification(message, duration = 3000) {
+            this.setState({ notificationMessage: message, showNotification: true });
+
+            setTimeout(() => {
+                this.setState({ showNotification: false });
+            }, duration);
+        }
+        async cadastrarProduto() {
+            try {
+                const response = await fetch('http://localhost:8080/v1/produtos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(this.state.novoProduto),
+                });
+                if (response.ok) {
+                    this.showNotification('Produto adicionado com sucesso', 3000);
+                    this.fetchProdutos();
+                    this.setState({
+                        novoProduto: {
+                            nome: '',
+                            descr: '',
+                            qtd: '',
+                            preco: '',
+                        }
+                    });
+                } else {
+                    console.error('Erro ao cadastrar o produto.');
+                }
+            } catch (error) {
+                console.error('Erro ao cadastrar o produto:', error);
+            }
+        }
+
+        async removerProduto(id) {
+            try {
+                const response = await fetch(`http://localhost:8080/v1/produtos/${id}`, {
+                    method: 'DELETE',
+                });
+                if (response.ok) {
+                    this.fetchProdutos();
+                    this.showNotification('Produto removido com sucesso', 3000);
+                } else {
+                    console.error('Erro ao remover o produto.');
+                }
+            } catch (error) {
+                console.error('Erro ao remover o produto:', error);
+            }
+        }
+
+        async editarProduto() {
+            try {
+                const response = await fetch(`http://localhost:8080/v1/produtos/${this.state.produtoEmEdicao.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(this.state.produtoEmEdicao),
+                });
+                if (response.ok) {
+                    this.fetchProdutos();
+                    this.setState({ produtoEmEdicao: null });
+                    this.showNotification('Produto editado com sucesso', 3000);
+                } else {
+                    console.error('Erro ao editar o produto.');
+                }
+            } catch (error) {
+                console.error('Erro ao editar o produto:', error);
+            }
+        }
+
+        render() {
+            return (
+                <div className="container">
+                    
+                    <form>
+                        <h1>Gestor de Produtos</h1>
+                        <h2>Adicionar Produto</h2>
+                        <label>
+                            Nome:
+                            <input
+                                placeholder="Ex: Pen Drive"
+                                type="text"
+                                value={this.state.novoProduto.nome}
+                                onChange={(e) => this.setState({ novoProduto: { ...this.state.novoProduto, nome: e.target.value } })}
+                            />
+                        </label>
+                        <br />
+                        <label>
+                            Descrição:
+                            <input
+                                placeholder="Ex: Sandisk 16GB"
+                                type="text"
+                                value={this.state.novoProduto.descr}
+                                onChange={(e) => this.setState({ novoProduto: { ...this.state.novoProduto, descr: e.target.value } })}
+                            />
+                        </label>
+                        <br />
+                        <label>
+                            Quantidade:
+                            <input
+                                placeholder="Und | Kg"
+                                type="text"
+                                value={this.state.novoProduto.qtd}
+                                onChange={(e) => this.setState({ novoProduto: { ...this.state.novoProduto, qtd: e.target.value } })}
+                            />
+                        </label>
+                        <br />
+                        <label>
+                            Preço:
+                            <input
+                                placeholder="R$"
+                                type="text"
+                                value={this.state.novoProduto.preco}
+                                onChange={(e) => this.setState({ novoProduto: { ...this.state.novoProduto, preco: e.target.value } })}
+                            />
+                        </label>
+                        <br />
+                        <button type="button" onClick={() => this.cadastrarProduto()}>Cadastrar</button>
+
+                    </form>
+                    <ul>
+
+                        {this.state.produtos.map((produto, index) => (
+                            <li key={index}>
+                                <div className="produt">
+                                    <p></p>
+                                    <strong>Nome:</strong> {produto.nome} &nbsp;
+                                    <strong>Quantidade:</strong> {produto.qtd} &nbsp;
+                                    <strong>Preço:</strong> R$ {produto.preco} &nbsp; <p></p>
+                                    <strong>Descrição:</strong> {produto.descr} &nbsp; <p></p>
+                                    <br />
+                                    <button onClick={() => this.setState({ produtoEmEdicao: produto })}>Editar</button>
+                                    <span>&nbsp;</span>
+                                    <button className="btn-remover" onClick={() => this.removerProduto(produto.id)}>Remover</button>
+                                </div>
+
+
+                                {this.state.produtoEmEdicao && this.state.produtoEmEdicao.id === produto.id && (
+                                    <form>
+                                        {/* Formulário de edição do produto */}
+                                        <label>
+                                            Novo Nome:
+                                            <input
+                                                type="text"
+                                                value={this.state.produtoEmEdicao.nome}
+                                                onChange={(e) => this.setState({ produtoEmEdicao: { ...this.state.produtoEmEdicao, nome: e.target.value } })}
+                                            />
+                                        </label>
+                                        <br />
+                                        <label>
+                                            Nova Descrição:
+                                            <input
+                                                type="text"
+                                                value={this.state.produtoEmEdicao.descr}
+                                                onChange={(e) => this.setState({ produtoEmEdicao: { ...this.state.produtoEmEdicao, descr: e.target.value } })}
+                                            />
+                                        </label>
+                                        <br />
+                                        <label>
+                                            Nova Quantidade:
+                                            <input
+                                                type="text"
+                                                value={this.state.produtoEmEdicao.qtd}
+                                                onChange={(e) => this.setState({ produtoEmEdicao: { ...this.state.produtoEmEdicao, qtd: e.target.value } })}
+                                            />
+                                        </label>
+                                        <br />
+                                        <label>
+                                            Novo Preço:
+                                            <input
+                                                type="text"
+                                                value={this.state.produtoEmEdicao.preco}
+                                                onChange={(e) => this.setState({ produtoEmEdicao: { ...this.state.produtoEmEdicao, preco: e.target.value } })}
+                                            />
+                                        </label>
+                                        <br />
+                                        <div className="edit-buttons">
+                                            <button className="btn-salvar" type="button" onClick={() => this.editarProduto()}>Salvar</button>
+                                            <span>&nbsp;</span>
+                                            <button className="btn-cancelar" type="button" onClick={() => this.setState({ produtoEmEdicao: null })}>Cancelar</button>
+                                        </div>
+                                    </form>
+                                )}
+
+
+                            </li>
+
+                        ))}
+                    </ul>
+
+                    {this.state.showNotification && (
+                        <div className={`notification ${this.state.showNotification ? 'show' : ''}`}>
+                            {this.state.notificationMessage}
+                        </div>
+                    )}
+
+                </div>
+            );
+        }
+    }
+
+    ReactDOM.render(<ProdutoPageComponent />, document.getElementById('root'));

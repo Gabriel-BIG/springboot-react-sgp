@@ -1,0 +1,124 @@
+/* Estilo Escuro com teste de textos*/
+
+/* Estilos gerais */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-image: url('img/backgr.png'); /* Imagem de fundo */
+    background-size: cover; /* Cobrir toda a área do body */
+    background-repeat: no-repeat; /* Não repetir a imagem */
+    background-attachment: fixed; /* Fixar a imagem para que ela role com a página */
+    color: #fff; /* Texto mais claro */
+}
+
+h1 {
+    text-align: center;
+    color: #fff; /* Texto mais claro */
+}
+
+h2 {
+    color: #fff; /* Texto mais claro */
+    text-align: center;
+}
+
+/* Estilos para o formulário de criação de produto */
+form {
+    background-color: rgba(44, 43, 43, 0.899); /* Fundo mais escuro */
+    padding: 20px;
+    border: 1px solid #555; /* Borda mais escura */
+    border-radius: 10px;
+    margin-bottom: 20px;
+    margin: auto;
+    width: 40%;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #fff; /* Texto mais claro */
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 95%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #555; /* Borda mais escura */
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px 21px;
+    background-color: #d67c27; /* Fundo mais escuro */
+    color: #fff;
+    cursor: pointer;
+    border-radius: 8%;
+}
+
+button:hover {
+    background-color: #777777; /* Fundo mais escuro quando passar o mouse */
+}
+
+/* Estilos para a lista de produtos */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #444; /* Fundo mais escuro */
+    padding: 10px;
+    border: 1px solid #555; /* Borda mais escura */
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    transition: background-color 0.3s ease, transform 0.5s ease; /* Aumentando a duração da transição para um movimento mais suave */
+}
+
+li:hover {
+    border-radius: 10px;
+    background-color: #555; /* Fundo mais escuro ao passar o mouse */
+    transform: translateY(-10px); /* Deslocamento vertical de -2px ao passar o mouse */
+}
+
+/* Estilos para o formulário de edição de produto (inicialmente oculto) */
+#edit-product-form {
+    display: none;
+}
+
+.produt {
+    margin-inline: 2%;
+    margin-block: auto;
+}
+
+.notification-container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(44, 43, 43, 0.899);
+    padding: 16px;
+    border-radius: 4px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out; /* Adiciona uma transição suave de opacidade */
+}
+
+.notification.show {
+    opacity: 1;
+}
